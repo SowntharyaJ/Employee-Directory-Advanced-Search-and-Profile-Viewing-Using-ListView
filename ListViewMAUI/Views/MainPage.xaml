@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="ListViewMAUI.MainPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:listView="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+             xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"                          
+             xmlns:popup="clr-namespace:Syncfusion.Maui.Toolkit.Popup;assembly=Syncfusion.Maui.Toolkit"    
+             xmlns:chip="clr-namespace:Syncfusion.Maui.Toolkit.Chips;assembly=Syncfusion.Maui.Toolkit"    
+             xmlns:local="clr-namespace:ListViewMAUI"
+             Title="Employee Directory">
+
+    <ContentPage.BindingContext>
+        <local:EmployeeDirectoryViewModel />
+    </ContentPage.BindingContext>
+
+    <ContentPage.Behaviors>
+        <local:SfListViewFilteringBehavior/>
+    </ContentPage.Behaviors>
+
+    <ContentPage.Resources>
+
+        <ResourceDictionary>
+
+            <Style TargetType="popup:SfPopup">
+                <Setter Property="ShowFooter" Value="False"/>
+                <Setter Property="ShowHeader" Value="False"/>
+                <Setter Property="ShowOverlayAlways" Value="False"  />
+                <Setter Property="RelativePosition" Value="AlignBottom"/>
+                <Setter Property="PopupStyle">
+                    <popup:PopupStyle CornerRadius="10" Stroke="LightGray" MessageBackground="White" StrokeThickness="1" HasShadow="True"/>
+                </Setter>
+            </Style>
+
+            <Style TargetType="chip:SfChip">
+                <Setter Property="StrokeThickness" Value="0"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <chip:SfChip Text="Search" VerticalOptions="Center" HorizontalOptions="End" x:Name="Search" WidthRequest="250" Command="{Binding SearchAndFilter}"/>
+        <popup:SfPopup IsOpen="{Binding IsOpenForSearch}"  HeightRequest="60" RelativeView="{x:Reference Search}" AutoSizeMode="Width">
+                <popup:SfPopup.ContentTemplate>
+                <DataTemplate>
+                    <HorizontalStackLayout Spacing="20" Margin="10">
+
+                        <!-- Search and Filter Section -->
+                        <Border StrokeThickness="1" VerticalOptions="Center"
+                                BackgroundColor="White"
+                                HeightRequest="38"                                
+                                StrokeShape="RoundRectangle 8">
+                            <Grid ColumnDefinitions="Auto,*"
+                                      Margin="0,0,8,0">
+                                <Label Text="&#xe728;"
+                                          FontFamily="MauiSampleFontIcon"
+                                          VerticalOptions="Center"
+                                          HorizontalOptions="Center"
+                                          FontSize="16"
+                                          Margin="10,0,12,0" />
+                                <local:SfEntry  x:Name="filterText"
+                                                    Text="{Binding SearchText}"
+                                                   Grid.Column="1"                                                     
+                                                   BackgroundColor="Transparent"                                                                                                  
+                                                    HorizontalOptions="{OnPlatform Android='StartAndExpand',WinUI='End',MacCatalyst='End',iOS='FillAndExpand'}"
+                                                   VerticalTextAlignment="{OnPlatform Default=Start, MacCatalyst=Center, iOS=Center}"
+                                                   FontFamily="Roboto-Regular"
+                                                   FontSize="16"
+                                                   ClearButtonVisibility="Never" />
+                            </Grid>
+                        </Border>
+
+                        <!-- Department Filter -->
+                        <editors:SfComboBox ItemsSource="{Binding Departments}"                                             
+                                            Placeholder="Filter by Department" 
+                                            PlaceholderColor="LightGray" 
+                                            SelectedItem="{Binding SelectedDepartment}" 
+                                            IsClearButtonVisible="False"/>
+
+                        <!-- Skills Filter -->
+                        <editors:SfComboBox ItemsSource="{Binding Skills}"                                            
+                                            Placeholder="Filter by Skills"                                             
+                                            PlaceholderColor="LightGray"  
+                                            SelectedItem="{Binding SelectedSkill}" 
+                                            IsClearButtonVisible="False"/>
+
+                        <!-- Clear Filters Button -->
+                        <Button 
+                    Text="Clear Filters"
+                    Command="{Binding ClearFiltersCommand}"
+                    BackgroundColor="White"
+                    TextColor="{StaticResource Primary}"
+                     />
+                    </HorizontalStackLayout>
+
+                </DataTemplate>
+                </popup:SfPopup.ContentTemplate>
+            </popup:SfPopup>
+
+
+        <!-- Employee List -->
+        <listView:SfListView Grid.Row="1"
+                             x:Name="listView"
+                           ItemsSource="{Binding EmployeeDirectories}"                           
+                           ItemSize="120"
+                           SelectionMode="Single"
+                           TapCommand="{Binding ViewProfileCommand}"
+                           ItemSpacing="8,8,8,8">
+
+            <listView:SfListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="16" 
+                          BackgroundColor="White"
+                          RowDefinitions="Auto,Auto,Auto,Auto">
+
+                        <!-- Employee Header -->
+                        <Grid Grid.Row="0" ColumnDefinitions="100,*,Auto">
+
+                            <!-- Profile Image -->
+                            <Border Grid.Column="0"
+                                    StrokeShape="RoundRectangle 50"
+                                    Stroke="Gray"
+                                    StrokeThickness="1"
+                                    WidthRequest="100"
+                                    HeightRequest="100">
+                                <Image Source="{Binding ImageUrl}"
+                                       Aspect="AspectFill" />
+                            </Border>
+
+                            <!-- Name and Position -->
+                            <StackLayout Grid.Column="1" 
+                                       Margin="12,0,0,0"
+                                       VerticalOptions="Center">
+                                <Label Text="{Binding FullName}"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       TextColor="Black" />
+                                <Label Text="{Binding Position}"
+                                       FontSize="14"
+                                       TextColor="Gray" />
+
+                                <HorizontalStackLayout Spacing="5">
+                                    <Label Text="Reports to "
+            FontSize="14"
+            TextColor="Gray" />
+                                    <Label Text="{Binding Manager}"
+            FontSize="14"
+            TextColor="Gray" />
+                                </HorizontalStackLayout>
+
+                                <Label Text="{Binding Location}"
+                FontSize="14"
+                TextColor="Gray" />
+
+                                <Label Text="{Binding Department}"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Primary}" />
+                            </StackLayout>
+                            
+                            <!-- Contact Information -->
+                            <Grid Grid.Column="2" 
+                              RowDefinitions="*,*,*,*"
+                              Margin="0,8,0,0">
+                                <Label Grid.Row="1"
+                                   Text="{Binding Email}"
+                                   FontSize="12"
+                                   TextColor="Gray" />
+                                <Label Grid.Row="2"
+                                   Text="{Binding PhoneNumber}"
+                                   FontSize="12"
+                                   TextColor="Gray"
+                                   HorizontalTextAlignment="End" />
+                            </Grid>
+                        </Grid>
+
+
+
+                        <!-- Skills -->
+                        <Label Grid.Row="2"
+                               Text="{Binding SkillsText}"
+                               FontSize="11"
+                               TextColor="{StaticResource Secondary}"
+                               Margin="0,4,0,0"
+                               MaxLines="2"
+                               LineBreakMode="TailTruncation" />
+
+                        <!-- Hire Date -->
+                        <Label Grid.Row="3"
+                               Text="{Binding HireDate, StringFormat='Hired: {0:MMM yyyy}'}"
+                               FontSize="10"
+                               TextColor="Gray"
+                               Margin="0,4,0,0" />
+                    </Grid>
+                </DataTemplate>
+            </listView:SfListView.ItemTemplate>
+        </listView:SfListView>
+    </Grid>
+</ContentPage>            
