@@ -37,10 +37,10 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="Auto,*">
+    <Grid RowDefinitions="Auto,*,0">
 
-        <chip:SfChip Text="Search" VerticalOptions="Center" HorizontalOptions="End" x:Name="Search" WidthRequest="250" Command="{Binding SearchAndFilter}"/>
-        <popup:SfPopup IsOpen="{Binding IsOpenForSearch}"  HeightRequest="60" RelativeView="{x:Reference Search}" AutoSizeMode="Width">
+        <chip:SfChip Grid.Row="0" Text="Search" VerticalOptions="Center" HorizontalOptions="End" x:Name="Search" WidthRequest="250" Command="{Binding SearchAndFilter}"/>
+        <popup:SfPopup Grid.Row="2" IsOpen="{Binding IsOpenForSearch}"  HeightRequest="60" RelativeView="{x:Reference Search}" AutoSizeMode="Width">
                 <popup:SfPopup.ContentTemplate>
                 <DataTemplate>
                     <HorizontalStackLayout Spacing="20" Margin="10">
